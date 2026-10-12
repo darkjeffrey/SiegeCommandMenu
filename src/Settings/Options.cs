@@ -19,6 +19,8 @@ namespace SiegeCommandMenu
 
         public static bool DebugLog => Get(nameof(ModSettings.DebugLog), false);
 
+        public static bool DebugMessages => Get(nameof(ModSettings.DebugMessages), false);
+
         public static bool CheatInstantCamp => Get(nameof(ModSettings.CheatInstantCamp), false);
 
         public static bool CheatInstantEngines => Get(nameof(ModSettings.CheatInstantEngines), false);

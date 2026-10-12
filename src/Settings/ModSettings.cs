@@ -42,9 +42,14 @@ namespace SiegeCommandMenu
         // ---- Debug
 
         [SettingPropertyBool("Write debug log", Order = 4, RequireRestart = false,
-            HintText = "Write every build, deploy and reserve action to debug_log.txt in the mod's folder.")]
+            HintText = "Write every build, deploy and reserve action, the siege state before and after, and a state line on every hourly and daily tick to debug_log.txt in the mod's folder. The file is written line by line, so it survives a crash.")]
         [SettingPropertyGroup("Debug", GroupOrder = 50)]
         public bool DebugLog { get; set; } = false;
+
+        [SettingPropertyBool("Print debug info in game", Order = 5, RequireRestart = false,
+            HintText = "Also show each siege action and the engine state as messages in the game's message feed (needs the debug log option as well to be saved to the file).")]
+        [SettingPropertyGroup("Debug", GroupOrder = 50)]
+        public bool DebugMessages { get; set; } = false;
 
         // ---- Cheats (always last)
 
