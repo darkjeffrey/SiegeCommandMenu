@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Module xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/BUTR/Bannerlord.XmlSchemas/master/SubModule.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name value="Siege Command Menu" />
+  <Id value="SiegeCommandMenu" />
+  <Version value="v0.1.0" />
+  <SingleplayerModule value="true" />
+  <MultiplayerModule value="false" />
+  <DependedModules>
+    <DependedModule Id="Native" />
+    <DependedModule Id="SandBoxCore" />
+    <DependedModule Id="Sandbox" />
+  </DependedModules>
+  <OptionalDependedModules>
+    <OptionalDependedModule Id="Bannerlord.MBOptionScreen" />
+  </OptionalDependedModules>
+  <SubModules>
+    <SubModule>
+      <Name value="SiegeCommandMenu" />
+      <DLLName value="SiegeCommandMenu.dll" />
+      <SubModuleClassType value="SiegeCommandMenu.SubModule" />
+      <Tags>
+        <Tag key="DedicatedServerType" value="none" />
+        <Tag key="IsNoRenderModeElement" value="false" />
+      </Tags>
+    </SubModule>
+  </SubModules>
+</Module>

@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>10</LangVersion>
+    <Nullable>disable</Nullable>
+    <AssemblyName>SiegeCommandMenu</AssemblyName>
+    <RootNamespace>SiegeCommandMenu</RootNamespace>
+    <PlatformTarget>x64</PlatformTarget>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- Change this to your Bannerlord install folder (keep the trailing backslash). -->
+    <GameDir Condition="'$(GameDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\</GameDir>
+    <GameBin>$(GameDir)bin\Win64_Shipping_Client\</GameBin>
+    <ModDir>$(GameDir)Modules\SiegeCommandMenu\</ModDir>
+    <!-- Mod Configuration Menu v5, used for the options screen. Adjust if your copy is elsewhere. -->
+    <McmDll>$(GameDir)Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\MCMv5.dll</McmDll>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Game assemblies: referenced, never copied. -->
+    <Reference Include="$(GameBin)TaleWorlds.*.dll" Private="false" />
+    <Reference Include="$(GameDir)Modules\SandBox\bin\Win64_Shipping_Client\SandBox*.dll" Private="false" />
+    <Reference Include="$(McmDll)" Private="false" Condition="Exists('$(McmDll)')" />
+  </ItemGroup>
+
+  <!-- A clear message instead of a pile of "type not found" errors if MCM is not where expected. -->
+  <Target Name="CheckMcm" BeforeTargets="CoreCompile">
+    <Error Condition="!Exists('$(McmDll)')"
+           Text="MCMv5.dll was not found at $(McmDll). Set McmDll in SiegeCommandMenu.csproj to the MCMv5.dll inside your Mod Configuration Menu v5 module folder." />
+  </Target>
+
+  <!-- Deploy into Modules\SiegeCommandMenu after each build. -->
+  <Target Name="DeployMod" AfterTargets="Build">
+    <ItemGroup>
+      <ModFiles Include="$(MSBuildProjectDirectory)\_Module\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ModFiles)"
+          DestinationFiles="@(ModFiles->'$(ModDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="$(OutputPath)SiegeCommandMenu.dll"
+          DestinationFolder="$(ModDir)bin\Win64_Shipping_Client\" />
+  </Target>
+
+</Project>
