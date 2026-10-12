@@ -47,6 +47,10 @@ namespace SiegeCommandMenu
         [DataSourceProperty]
         public bool HasAction => _action != null;
 
+        /// <summary>True when there is a line to show under the stats: a click hint, or why nothing can be clicked.</summary>
+        [DataSourceProperty]
+        public bool HasActionText => ActionText.Length > 0;
+
         /// <summary>Runs on the next frame, not inside the click, so the panel can safely close itself.</summary>
         public void ExecuteAction()
         {

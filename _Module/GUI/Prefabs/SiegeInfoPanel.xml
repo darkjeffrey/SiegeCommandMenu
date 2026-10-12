@@ -43,7 +43,7 @@
                                 <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" Brush="GameMenu.Text" Brush.FontSize="20" Brush.TextHorizontalAlignment="Left" Text="@Line2" />
                                 <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" Brush="GameMenu.Text" Brush.FontSize="20" Brush.TextHorizontalAlignment="Left" Text="@Line3" />
                                 <RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="GameMenu.InfoText" Brush.FontSize="18" Brush.TextHorizontalAlignment="Left" Text="@Description" />
-                                <TextWidget DoNotAcceptEvents="true" IsVisible="@HasAction" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="30" MarginTop="6" Brush="GameMenu.Siege.Title" Brush.FontSize="20" Brush.TextHorizontalAlignment="Left" Text="@ActionText" />
+                                <TextWidget DoNotAcceptEvents="true" IsVisible="@HasActionText" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="30" MarginTop="6" Brush="GameMenu.Siege.Title" Brush.FontSize="20" Brush.TextHorizontalAlignment="Left" Text="@ActionText" />
                               </Children>
                             </ListPanel>
 

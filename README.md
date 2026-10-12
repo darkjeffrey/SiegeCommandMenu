@@ -43,7 +43,10 @@ Build, deploy, reserve and cancel go through the game's own `SiegeEvent.DoSiegeA
 
 ## Troubleshooting
 
-Errors are written to `error_log.txt` in `Modules\SiegeCommandMenu`. Turn on **Write debug log** in the mod options to also get `debug_log.txt` with every siege action.
+Errors are always written to `error_log.txt` in `Modules\SiegeCommandMenu`. In the mod options, the **Debug** group has two switches:
+
+- **Write debug log**: writes `debug_log.txt` with every build, deploy, reserve and cancel (with the full engine state before and after) and the state on every hourly and daily tick. Lines are written one at a time, so the log survives a crash. Attach `debug_log.txt` to bug reports.
+- **Print debug info in game**: also shows each action as a message in the game's message feed.
 
 ## License
 

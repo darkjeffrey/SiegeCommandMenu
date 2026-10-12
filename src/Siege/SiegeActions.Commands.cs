@@ -69,41 +69,58 @@ namespace SiegeCommandMenu
         /// <summary>Moves a reserve engine into the first free slot it fits. False if none is free.</summary>
         public static bool DeployFromReserve(SiegeEvent siege, SiegeEvent.SiegeEngineConstructionProgress engine)
         {
+            int slot = FreeSlotFor(siege, engine);
+            return slot >= 0 && DeployFromReserve(siege, engine, slot);
+        }
+
+        /// <summary>Index of the first free slot this reserve engine fits, or -1 if there is none.</summary>
+        public static int FreeSlotFor(SiegeEvent siege, SiegeEvent.SiegeEngineConstructionProgress engine)
+        {
             bool ranged = engine.SiegeEngine.IsRanged;
             var slots = DeployedSlots(siege, ranged);
 
             for (int i = 0; i < slots.Count; i++)
             {
                 if (slots[i] == null && (ranged || CanPlaceMelee(siege, i, engine.SiegeEngine)))
-                    return DeployFromReserve(siege, engine, i);
+                    return i;
             }
 
-            return false;
+            return -1;
         }
 
-        /// <summary>Moves a reserve engine into one specific free slot. False if the slot is taken or does not fit.</summary>
+        /// <summary>
+        /// Moves a reserve engine into one specific free slot. False if the slot is taken, does not fit,
+        /// or the game has no matching action. There is deliberately no fallback that edits the engine
+        /// containers directly: that crashed the game at the next daily tick.
+        /// </summary>
         public static bool DeployFromReserve(SiegeEvent siege, SiegeEvent.SiegeEngineConstructionProgress engine, int slotIndex)
         {
             bool ranged = engine.SiegeEngine.IsRanged;
             var slots = DeployedSlots(siege, ranged);
             if (slotIndex < 0 || slotIndex >= slots.Count || slots[slotIndex] != null)
-                return false;
-            if (!ranged && !CanPlaceMelee(siege, slotIndex, engine.SiegeEngine))
-                return false;
-
-            var engines = Engines(siege);
-            ModLog.Debug(() => "DeployFromReserve " + engine.SiegeEngine.StringId + " slot=" + slotIndex + " | before: " + Describe(siege));
-
-            int reserveIndex = Reserve(siege).IndexOf(engine);
-            if (!(reserveIndex >= 0 && DoGameAction(siege, "FromReserve", engine.SiegeEngine, slotIndex, reserveIndex)))
             {
-                engines.DeploySiegeEngineAtIndex(engine, slotIndex);
-                if (engines.ReservedSiegeEngines.Contains(engine))
-                    engines.ReservedSiegeEngines.Remove(engine);
+                ModLog.Debug(() => "DeployFromReserve refused: slot " + slotIndex + " is not free (ranged=" + ranged + ")");
+                return false;
             }
 
-            ModLog.Debug(() => "DeployFromReserve done | after: " + Describe(siege));
-            return true;
+            if (!ranged && !CanPlaceMelee(siege, slotIndex, engine.SiegeEngine))
+            {
+                ModLog.Debug(() => "DeployFromReserve refused: " + engine.SiegeEngine.StringId + " does not fit melee slot " + slotIndex);
+                return false;
+            }
+
+            int reserveIndex = Reserve(siege).IndexOf(engine);
+            if (reserveIndex < 0)
+            {
+                ModLog.Debug(() => "DeployFromReserve refused: " + engine.SiegeEngine.StringId + " is no longer in the reserve");
+                return false;
+            }
+
+            ModLog.Debug(() => "DeployFromReserve " + engine.SiegeEngine.StringId + " slot=" + slotIndex
+                + " reserveIndex=" + reserveIndex + " ranged=" + ranged + "\r\n" + DescribeDetailed(siege));
+            bool done = DoGameAction(siege, "FromReserve", engine.SiegeEngine, slotIndex, reserveIndex);
+            ModLog.Debug(() => "DeployFromReserve " + (done ? "done" : "FAILED (no game action)") + "\r\n" + DescribeDetailed(siege));
+            return done;
         }
 
         /// <summary>Moves a finished deployed engine to the reserve. Unfinished engines are refused, as in the base game.</summary>

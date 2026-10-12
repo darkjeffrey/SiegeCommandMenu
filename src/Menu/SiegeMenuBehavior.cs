@@ -42,6 +42,14 @@ namespace SiegeCommandMenu
         {
             CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
             CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, OnHourly);
+            CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDaily);
+        }
+
+        /// <summary>Debug only: the state just before the game's daily siege processing (where past crashes surfaced).</summary>
+        private void OnDaily()
+        {
+            var siege = Siege;
+            ModLog.Debug(() => siege == null ? "Daily tick | no siege" : "Daily tick\r\n" + SiegeActions.DescribeDetailed(siege));
         }
 
         public override void SyncData(IDataStore dataStore)
@@ -210,7 +218,7 @@ namespace SiegeCommandMenu
                 args =>
                 {
                     args.optionLeaveType = GameMenuOption.LeaveType.Continue;
-                    return SelectedEngine(out bool deployed) != null && !deployed;
+                    return SelectedReserveHasFreeSlot();
                 },
                 args => DeploySelected());
 
@@ -238,7 +246,8 @@ namespace SiegeCommandMenu
             starter.AddGameMenuOption(SlotMenuId, "scm_cancel", "Cancel construction",
                 args =>
                 {
-                    args.optionLeaveType = GameMenuOption.LeaveType.Leave;
+                    // "Surrender" is the game's retreat icon, the closest it has to a cancel icon.
+                    args.optionLeaveType = GameMenuOption.LeaveType.Surrender;
                     return SelectedUnfinished();
                 },
                 args => CancelSelected());

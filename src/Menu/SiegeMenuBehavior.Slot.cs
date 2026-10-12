@@ -30,6 +30,13 @@ namespace SiegeCommandMenu
             return _selectedIndex >= 0 && _selectedIndex < list.Count ? list[_selectedIndex] : null;
         }
 
+        /// <summary>True when the selection is a reserve engine and a free slot it fits exists.</summary>
+        private static bool SelectedReserveHasFreeSlot()
+        {
+            var engine = SelectedEngine(out bool deployed);
+            return engine != null && !deployed && Siege != null && SiegeActions.FreeSlotFor(Siege, engine) >= 0;
+        }
+
         /// <summary>True when the selection is an empty deployed slot.</summary>
         private static bool SelectedIsEmptySlot()
         {
@@ -68,6 +75,8 @@ namespace SiegeCommandMenu
                 text = slotName + " is empty.\nWhen finished: " + (_buildToReserve ? "send to reserve" : "stay deployed") + "\nAvailable to build:";
 
                 var buildable = SiegeActions.BuildableTypes(_selectedKind == SlotKind.Ranged, Siege, _selectedIndex);
+                ModLog.Debug(() => "Build list (hide non-fire " + (Options.HideNonFire ? "on" : "off") + "): "
+                    + string.Join(", ", buildable.Select(t => t.StringId)));
                 for (int i = 0; i < buildable.Count; i++)
                 {
                     int b = i;
@@ -101,12 +110,18 @@ namespace SiegeCommandMenu
                     + (deployed && engine.Progress < 1f && _flags.Contains(Key(_selectedKind, _selectedIndex)) ? " - will move to reserve when finished" : "") + "\n" + SiegeInfoOverlay.OneLine(siege, type);
 
                 bool unfinished = deployed && engine.Progress < 1f;
+                bool noSlot = !deployed && SiegeActions.FreeSlotFor(siege, engine) < 0;
+                if (noSlot)
+                    text += "\nThere is no free slot available for this engine.";
+
                 string actionText = unfinished ? "Click to cancel construction"
-                    : deployed ? "Click to move to reserve" : "Click to deploy to a free slot";
+                    : deployed ? "Click to move to reserve"
+                    : noSlot ? "No free slot available" : "Click to deploy to a free slot";
                 Action action = unfinished ? (Action)CancelSelected
-                    : deployed ? (Action)MoveSelectedToReserve : DeploySelected;
+                    : deployed ? (Action)MoveSelectedToReserve
+                    : noSlot ? null : (Action)DeploySelected;
                 cards.Add(SiegeInfoOverlay.Card(siege, type,
-                    clickable ? actionText : null,
+                    clickable || noSlot ? actionText : null,
                     clickable ? action : null,
                     engine));
                 SiegeInfoOverlay.Show(type.Name.ToString(), cards);
@@ -121,6 +136,7 @@ namespace SiegeCommandMenu
             var engine = SelectedEngine(out bool _);
             if (engine != null && Siege != null)
             {
+                ModLog.Debug(() => "Menu: deploy reserve engine " + engine.SiegeEngine.StringId + " to a free slot");
                 bool ok = SiegeActions.DeployFromReserve(Siege, engine);
                 _note = ok ? "Deployed " + engine.SiegeEngine.Name + "." : "No free slot for " + engine.SiegeEngine.Name + ".";
             }
@@ -216,6 +232,7 @@ namespace SiegeCommandMenu
                 return;
 
             var engine = matching[r];
+            ModLog.Debug(() => "Menu: deploy reserve engine " + engine.SiegeEngine.StringId + " to " + _selectedKind + " slot " + _selectedIndex);
             bool ok = SiegeActions.DeployFromReserve(Siege, engine, _selectedIndex);
             _note = ok ? "Deployed " + engine.SiegeEngine.Name + "." : "No free slot for " + engine.SiegeEngine.Name + ".";
             GameMenu.SwitchToMenu(PlanningMenuId);
