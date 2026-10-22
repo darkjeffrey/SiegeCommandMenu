@@ -1,22 +1,20 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.Siege;
-using TaleWorlds.Core;
-using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
 namespace SiegeCommandMenu
 {
+    /// <summary>The planning menu: camp progress plus one option per slot and reserve engine.</summary>
     internal partial class SiegeMenuBehavior
     {
-        // ---------------------------------------------------------------- planning menu
+        private static TextObject MenuTitle => new TextObject("{=scm_title}Siege Planning");
+
+        private static string NotBesieging => Text.Get("{=scm_not_besieging}You are not besieging anything.");
 
         private static void PlanningInit(MenuCallbackArgs args)
         {
-            args.MenuTitle = new TextObject("Siege Planning");
+            args.MenuTitle = MenuTitle;
             SiegeInfoOverlay.Hide();
             _buildToReserve = Options.AutoReserve;
             SiegeActions.FinishEnginesIfCheat(Siege);
@@ -24,56 +22,64 @@ namespace SiegeCommandMenu
             var siege = Siege;
             if (siege == null)
             {
-                MBTextManager.SetTextVariable("SCM_PLANNING_TEXT", "You are not besieging anything.");
+                MBTextManager.SetTextVariable("SCM_PLANNING_TEXT", NotBesieging);
                 return;
             }
 
             string text = SiegeActions.CampProgress(siege) >= 1f
-                ? "Siege camp: complete"
-                : "Siege camp: ready in " + SiegeActions.DaysText(SiegeActions.CampDaysLeft(siege));
-            text += "\n\n";
-            text += string.IsNullOrEmpty(_note) ? "Pick a slot or an engine." : _note;
+                ? Text.Get("{=scm_camp_done}Siege camp: complete")
+                : Text.Get("{=scm_camp_ready_in}Siege camp: ready in {TIME}", "TIME", SiegeActions.DaysText(SiegeActions.CampDaysLeft(siege)));
+            text += "\n\n" + (string.IsNullOrEmpty(_note) ? Text.Get("{=scm_pick}Pick a slot or an engine.") : _note);
             _note = "";
 
             MBTextManager.SetTextVariable("SCM_PLANNING_TEXT", text);
         }
 
+        private static string SlotName(SlotKind kind, int index)
+        {
+            switch (kind)
+            {
+                case SlotKind.Ranged:
+                    return Text.Get("{=scm_slot_ranged}Ranged slot {N}", "N", index + 1);
+                case SlotKind.Melee:
+                    return Text.Get("{=scm_slot_melee}Tower or ram slot {N}", "N", index + 1);
+                default:
+                    return Text.Get("{=scm_slot_reserve}Reserve");
+            }
+        }
+
         private static List<PlanRow> Rows(SiegeEvent siege)
         {
             var rows = new List<PlanRow>();
-            AddDeployed(rows, siege, SlotKind.Ranged, "Ranged slot ");
-            AddDeployed(rows, siege, SlotKind.Melee, "Tower or ram slot ");
+            AddDeployed(rows, siege, SlotKind.Ranged);
+            AddDeployed(rows, siege, SlotKind.Melee);
 
             var reserve = SiegeActions.Reserve(siege);
             for (int i = 0; i < reserve.Count; i++)
             {
-                if (reserve[i] == null)
-                    continue;
-
-                rows.Add(new PlanRow
-                {
-                    Kind = SlotKind.Reserve,
-                    Index = i,
-                    Engine = reserve[i],
-                    Text = "Reserve: " + reserve[i].SiegeEngine.Name + " (" + Status(reserve[i]) + ")"
-                });
+                if (reserve[i] != null)
+                    rows.Add(new PlanRow { Kind = SlotKind.Reserve, Index = i, Engine = reserve[i], Text = RowText(SlotKind.Reserve, i, reserve[i]) });
             }
 
             return rows;
         }
 
-        private static void AddDeployed(List<PlanRow> rows, SiegeEvent siege, SlotKind kind, string prefix)
+        private static void AddDeployed(List<PlanRow> rows, SiegeEvent siege, SlotKind kind)
         {
             var slots = SiegeActions.DeployedSlots(siege, kind == SlotKind.Ranged);
             for (int i = 0; i < slots.Count; i++)
-            {
-                var engine = slots[i];
-                string text = prefix + (i + 1) + ": ";
-                text += engine == null ? "empty" : engine.SiegeEngine.Name + " (" + Status(engine) + ")";
-                rows.Add(new PlanRow { Kind = kind, Index = i, Engine = engine, Text = text });
-            }
+                rows.Add(new PlanRow { Kind = kind, Index = i, Engine = slots[i], Text = RowText(kind, i, slots[i]) });
         }
 
+        private static string RowText(SlotKind kind, int index, SiegeEvent.SiegeEngineConstructionProgress engine)
+        {
+            return engine == null
+                ? Text.Get("{=scm_row_empty}{SLOT}: empty", "SLOT", SlotName(kind, index))
+                : Text.Get("{=scm_row_engine}{SLOT}: {ENGINE} ({STATUS})",
+                    "SLOT", SlotName(kind, index), "ENGINE", engine.SiegeEngine.Name, "STATUS", Status(engine));
+        }
+
+        /// <summary>"ready in ~5 hours, 80% HP".</summary>
         private static string Status(SiegeEvent.SiegeEngineConstructionProgress engine)
         {
             string health = SiegeActions.HealthText(engine);
@@ -84,50 +90,14 @@ namespace SiegeCommandMenu
         private static string BuildStatus(SiegeEvent.SiegeEngineConstructionProgress engine)
         {
             if (engine.Progress >= 1f)
-                return "ready";
+                return Text.Get("{=scm_ready}ready");
 
             var siege = Siege;
             if (siege == null)
-                return "building";
+                return Text.Get("{=scm_building}building");
 
-            return "ready in " + SiegeActions.DaysText(SiegeActions.DaysToBuild(siege, engine.SiegeEngine, engine.Progress));
-        }
-
-        private static bool SelectedUnfinished()
-        {
-            var engine = SelectedEngine(out bool deployed);
-            return engine != null && deployed && engine.Progress < 1f;
-        }
-
-        private static bool SelectedFinishedDeployed()
-        {
-            var engine = SelectedEngine(out bool deployed);
-            return engine != null && deployed && engine.Progress >= 1f;
-        }
-
-        private static void CancelSelected()
-        {
-            if (SelectedUnfinished() && Siege != null)
-            {
-                var engine = SelectedEngine(out bool _);
-                SiegeActions.Cancel(Siege, _selectedKind == SlotKind.Ranged, _selectedIndex);
-                _flags.Remove(Key(_selectedKind, _selectedIndex));
-                _note = "Cancelled construction of " + engine.SiegeEngine.Name + ".";
-            }
-
-            GameMenu.SwitchToMenu(PlanningMenuId);
-        }
-
-        private static void ToggleSelectedFlag()
-        {
-            if (!SelectedUnfinished())
-                return;
-
-            string key = Key(_selectedKind, _selectedIndex);
-            if (!_flags.Remove(key))
-                _flags.Add(key);
-
-            GameMenu.SwitchToMenu(SlotMenuId);
+            return Text.Get("{=scm_ready_in}ready in {TIME}",
+                "TIME", SiegeActions.DaysText(SiegeActions.DaysToBuild(siege, engine.SiegeEngine, engine.Progress)));
         }
 
         private static bool RowCondition(MenuCallbackArgs args, int row)

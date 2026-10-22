@@ -8,9 +8,9 @@ namespace SiegeCommandMenu
     {
         /// <summary>
         /// Runs one of the game's own siege actions (SiegeEvent.DoSiegeAction), the same entry point its
-        /// siege screen uses, so the game does its own bookkeeping. Calling the engine container
-        /// directly crashed the game, so every change goes through here. The action is found by a part
-        /// of its enum name. Returns false if this game version has no such action.
+        /// siege screen uses, so the game does its own bookkeeping. Changing the engine containers
+        /// directly crashed the game, so every change goes through here, with no fallback. The action
+        /// is found by a part of its enum name. Returns false if this game version has no such action.
         /// </summary>
         private static bool DoGameAction(SiegeEvent siege, string namePart, SiegeEngineType type, int deploymentIndex, int reserveIndex)
         {
@@ -57,10 +57,7 @@ namespace SiegeCommandMenu
 
             ModLog.Debug(() => "Build " + type.StringId + " ranged=" + ranged + " slot=" + index + " | before: " + Describe(siege));
             if (!DoGameAction(siege, "Construct", type, index, -1))
-            {
-                var fallback = new SiegeEvent.SiegeEngineConstructionProgress(type, 0f, type.BaseHitPoints);
-                Engines(siege).DeploySiegeEngineAtIndex(fallback, index);
-            }
+                ModLog.Debug(() => "Build FAILED (no game action)");
 
             FinishEnginesIfCheat(siege);
             ModLog.Debug(() => "Build done | after: " + Describe(siege));
@@ -147,7 +144,7 @@ namespace SiegeCommandMenu
 
             ModLog.Debug(() => "Cancel ranged=" + ranged + " slot=" + index + " | before: " + Describe(siege));
             if (!DoGameAction(siege, "RemoveDeployed", engine.SiegeEngine, index, -1))
-                Engines(siege).RemoveDeployedSiegeEngine(index, ranged, false);
+                ModLog.Debug(() => "Cancel FAILED (no game action)");
             ModLog.Debug(() => "Cancel done | after: " + Describe(siege));
         }
     }

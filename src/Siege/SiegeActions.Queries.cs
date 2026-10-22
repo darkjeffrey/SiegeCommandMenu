@@ -100,16 +100,20 @@ namespace SiegeCommandMenu
         public static string DaysText(float days)
         {
             if (days < 0f)
-                return "no progress yet";
+                return Text.Get("{=scm_no_progress}no progress yet");
 
             if (days < 1f)
             {
                 int hours = Math.Max(1, (int)Math.Round(days * 24f));
-                return "~" + hours + (hours == 1 ? " hour" : " hours");
+                return hours == 1
+                    ? Text.Get("{=scm_one_hour}~1 hour")
+                    : Text.Get("{=scm_hours}~{HOURS} hours", "HOURS", hours);
             }
 
             float rounded = (float)Math.Round(days, 1);
-            return "~" + rounded.ToString("0.#") + (rounded == 1f ? " day" : " days");
+            return rounded == 1f
+                ? Text.Get("{=scm_one_day}~1 day")
+                : Text.Get("{=scm_days}~{DAYS} days", "DAYS", rounded.ToString("0.#"));
         }
 
         // ---- Health
@@ -136,7 +140,7 @@ namespace SiegeCommandMenu
                 if (max <= 0f)
                     return "";
 
-                return (hp / max * 100f).ToString("0") + "% HP";
+                return Text.Get("{=scm_hp_percent}{PERCENT}% HP", "PERCENT", (hp / max * 100f).ToString("0"));
             }
             catch (Exception)
             {

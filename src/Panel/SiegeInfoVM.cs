@@ -103,7 +103,7 @@ namespace SiegeCommandMenu
             CanScrollUp = _offset > 0;
             CanScrollDown = _offset + PageSize < _all.Count;
             PageText = _all.Count > PageSize
-                ? (_offset + 1) + "-" + Math.Min(_all.Count, _offset + PageSize) + " of " + _all.Count
+                ? Text.Get("{=scm_page}{FIRST}-{LAST} of {TOTAL}", "FIRST", _offset + 1, "LAST", Math.Min(_all.Count, _offset + PageSize), "TOTAL", _all.Count)
                 : "";
         }
 

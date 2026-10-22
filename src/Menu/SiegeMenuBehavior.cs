@@ -79,8 +79,7 @@ namespace SiegeCommandMenu
                 foreach (var key in _flags.ToList())
                 {
                     bool ranged = key[0] == 'R';
-                    int index;
-                    if (!int.TryParse(key.Substring(1), out index))
+                    if (!int.TryParse(key.Substring(1), out int index))
                     {
                         _flags.Remove(key);
                         continue;
@@ -130,16 +129,31 @@ namespace SiegeCommandMenu
                     if (engine == null || engine.Progress < 1f)
                         continue;
 
-                    string name = engine.SiegeEngine.Name.ToString();
                     bool moved = SiegeActions.MoveToReserve(siege, ranged, index);
                     InformationManager.DisplayMessage(new InformationMessage(moved
-                        ? name + " finished and moved to the reserve."
-                        : name + " finished, but could not be moved to the reserve."));
+                        ? Text.Get("{=scm_auto_moved}{ENGINE} finished and moved to the reserve.", "ENGINE", engine.SiegeEngine.Name)
+                        : Text.Get("{=scm_auto_move_failed}{ENGINE} finished, but could not be moved to the reserve.", "ENGINE", engine.SiegeEngine.Name)));
                 }
             }
             catch (Exception e)
             {
                 ModLog.Error("ProcessPending", e);
+            }
+        }
+
+        /// <summary>Called every frame: removes engines from melee slots they do not belong in (see RepairMeleeSlots).</summary>
+        public static void RepairTick()
+        {
+            if (Campaign.Current == null)
+                return;
+
+            try
+            {
+                SiegeActions.RepairMeleeSlots(Siege);
+            }
+            catch (Exception e)
+            {
+                ModLog.Error("RepairTick", e);
             }
         }
 
@@ -149,7 +163,7 @@ namespace SiegeCommandMenu
         private void OnSessionLaunched(CampaignGameStarter starter)
         {
             // Entry in the besieger's menu.
-            starter.AddGameMenuOption(MainMenuId, "scm_open", "Siege Planning",
+            starter.AddGameMenuOption(MainMenuId, "scm_open", "{=scm_title}Siege Planning",
                 args =>
                 {
                     args.optionLeaveType = GameMenuOption.LeaveType.Manage;
@@ -169,7 +183,7 @@ namespace SiegeCommandMenu
                     args => RowSelected(row));
             }
 
-            starter.AddGameMenuOption(PlanningMenuId, "scm_planning_back", "Back to the siege menu",
+            starter.AddGameMenuOption(PlanningMenuId, "scm_planning_back", "{=scm_back_siege}Back to the siege menu",
                 args =>
                 {
                     args.optionLeaveType = GameMenuOption.LeaveType.Leave;
@@ -187,8 +201,7 @@ namespace SiegeCommandMenu
                     if (!SelectedIsEmptySlot())
                         return false;
 
-                    MBTextManager.SetTextVariable("SCM_DEST",
-                        "When finished: " + (_buildToReserve ? "send to reserve" : "stay deployed") + " (click to change)");
+                    MBTextManager.SetTextVariable("SCM_DEST", WhenFinishedOption(_buildToReserve));
                     args.optionLeaveType = GameMenuOption.LeaveType.Manage;
                     return true;
                 },
@@ -214,7 +227,7 @@ namespace SiegeCommandMenu
                     args => FromReserveSelected(r));
             }
 
-            starter.AddGameMenuOption(SlotMenuId, "scm_deploy_selected", "Deploy to a free slot",
+            starter.AddGameMenuOption(SlotMenuId, "scm_deploy_selected", "{=scm_deploy_free}Deploy to a free slot",
                 args =>
                 {
                     args.optionLeaveType = GameMenuOption.LeaveType.Continue;
@@ -222,7 +235,7 @@ namespace SiegeCommandMenu
                 },
                 args => DeploySelected());
 
-            starter.AddGameMenuOption(SlotMenuId, "scm_to_reserve", "Move to reserve",
+            starter.AddGameMenuOption(SlotMenuId, "scm_to_reserve", "{=scm_move_to_reserve}Move to reserve",
                 args =>
                 {
                     args.optionLeaveType = GameMenuOption.LeaveType.Manage;
@@ -236,14 +249,13 @@ namespace SiegeCommandMenu
                     if (!SelectedUnfinished())
                         return false;
 
-                    MBTextManager.SetTextVariable("SCM_FLAG",
-                        "When finished: " + (_flags.Contains(Key(_selectedKind, _selectedIndex)) ? "send to reserve" : "stay deployed") + " (click to change)");
+                    MBTextManager.SetTextVariable("SCM_FLAG", WhenFinishedOption(SelectedFlagged));
                     args.optionLeaveType = GameMenuOption.LeaveType.Manage;
                     return true;
                 },
                 args => ToggleSelectedFlag());
 
-            starter.AddGameMenuOption(SlotMenuId, "scm_cancel", "Cancel construction",
+            starter.AddGameMenuOption(SlotMenuId, "scm_cancel", "{=scm_cancel}Cancel construction",
                 args =>
                 {
                     // "Surrender" is the game's retreat icon, the closest it has to a cancel icon.
@@ -252,7 +264,7 @@ namespace SiegeCommandMenu
                 },
                 args => CancelSelected());
 
-            starter.AddGameMenuOption(SlotMenuId, "scm_slot_back", "Back to planning",
+            starter.AddGameMenuOption(SlotMenuId, "scm_slot_back", "{=scm_back_planning}Back to planning",
                 args =>
                 {
                     args.optionLeaveType = GameMenuOption.LeaveType.Leave;

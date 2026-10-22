@@ -17,6 +17,7 @@ namespace SiegeCommandMenu
         protected override void OnApplicationTick(float dt)
         {
             base.OnApplicationTick(dt);
+            SiegeMenuBehavior.RepairTick();
             SiegeInfoOverlay.Tick();
             SiegeMenuBehavior.ProcessPending();
         }

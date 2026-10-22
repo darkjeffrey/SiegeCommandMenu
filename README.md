@@ -4,10 +4,11 @@ A Mount & Blade II: Bannerlord (v1.4.8) mod that adds a **Siege Planning** scree
 
 ## Features
 
-- **Siege Planning** option in the besieger's siege menu: one entry per ranged slot, "Tower or ram slot" and reserve engine.
+- **Siege Planning** option in the besieger's siege menu: one entry per ranged slot, "Tower or ram slot" and reserve engine. Melee slots follow the base game: the first takes the battering ram, the other two take siege towers.
 - Build only what your siege tier allows, with build times in in-game hours or days (including the siege camp).
 - Engine panel beside the menu with pictures, damage, hit chance, build time and current health (e.g. `80% HP`). Cards are clickable and the panel pages four cards at a time with Scroll up / Scroll down buttons.
 - Unfinished engines can be cancelled but not sent to the reserve; mark them to **move to reserve when finished**.
+- All text can be translated (`_Module/ModuleData/Languages`).
 - Options (Mod Configuration Menu): panel on/off, clickable panel, send new engines to reserve by default, hide non-fire engines when fire versions exist, debug log, and a **Cheats** group (instant siege camp, instant engines).
 
 ## Requirements
@@ -37,7 +38,8 @@ The build also copies the module (`_Module` plus the DLL) into `Modules\SiegeCom
 | `src/Menu/` | The game menus: planning screen and slot screen |
 | `src/Panel/` | The Gauntlet panel: view models, overlay, engine sprites |
 | `src/Settings/` | MCM settings class and the safe `Options` reader |
-| `_Module/` | `SubModule.xml` and the panel prefab |
+| `src/Text.cs` | Helper for the translatable `{=scm_id}English` strings |
+| `_Module/` | `SubModule.xml`, the panel prefab and the translation file (`ModuleData/Languages/std_SiegeCommandMenu.xml`) |
 
 Build, deploy, reserve and cancel go through the game's own `SiegeEvent.DoSiegeAction`. Changing the engine containers directly crashed the game at the next daily tick, so don't.
 
@@ -47,6 +49,14 @@ Errors are always written to `error_log.txt` in `Modules\SiegeCommandMenu`. In t
 
 - **Write debug log**: writes `debug_log.txt` with every build, deploy, reserve and cancel (with the full engine state before and after) and the state on every hourly and daily tick. Lines are written one at a time, so the log survives a crash. Attach `debug_log.txt` to bug reports.
 - **Print debug info in game**: also shows each action as a message in the game's message feed.
+
+## Translations
+
+Text lives in the code as `{=scm_id}English`. `_Module/ModuleData/Languages/std_SiegeCommandMenu.xml` lists every string; copy it into a language folder (for example `DE/std_SiegeCommandMenu-de.xml` with a `language_data.xml`) and translate the `text` values.
+
+## Support
+
+If you enjoy the mod, you can support me on [Ko-fi](https://ko-fi.com/darkjeffrey).
 
 ## License
 

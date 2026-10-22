@@ -35,26 +35,26 @@ namespace SiegeCommandMenu
         {
             // For an engine that exists, show its current health instead of the base value.
             string health = SiegeActions.HealthText(engine);
-            string line1 = health.Length > 0 ? health : "Hit points " + type.BaseHitPoints.ToString("0");
+            string line1 = health.Length > 0 ? health : Text.Get("{=scm_card_hp}Hit points {HP}", "HP", type.BaseHitPoints.ToString("0"));
             string line2 = "";
 
             if (type.IsRanged)
             {
-                line1 += "    Damage " + type.Damage.ToString("0");
-                line2 = "Hit chance " + (type.HitChance * 100).ToString("0") + "%    Shots per day "
-                        + type.CampaignRateOfFirePerDay.ToString("0");
+                line1 += "    " + Text.Get("{=scm_card_damage}Damage {DAMAGE}", "DAMAGE", type.Damage.ToString("0"));
+                line2 = Text.Get("{=scm_card_hit_chance}Hit chance {CHANCE}%", "CHANCE", (type.HitChance * 100).ToString("0"))
+                        + "    " + Text.Get("{=scm_card_shots}Shots per day {SHOTS}", "SHOTS", type.CampaignRateOfFirePerDay.ToString("0"));
                 if (type.IsAntiPersonnel)
-                    line2 += "    Anti-personnel";
+                    line2 += "    " + Text.Get("{=scm_card_anti_personnel}Anti-personnel");
             }
 
-            string line3 = "Build time " + SiegeActions.DaysText(SiegeActions.DaysToBuild(siege, type, 0f))
-                           + " (" + type.ManDayCost.ToString("0") + " man-days)";
-            if (engine != null)
-            {
-                line3 = engine.Progress >= 1f
-                    ? "Finished"
-                    : "Ready in " + SiegeActions.DaysText(SiegeActions.DaysToBuild(siege, type, engine.Progress));
-            }
+            string line3;
+            if (engine == null)
+                line3 = Text.Get("{=scm_card_build_time}Build time {TIME} ({MANDAYS} man-days)",
+                    "TIME", SiegeActions.DaysText(SiegeActions.DaysToBuild(siege, type, 0f)), "MANDAYS", type.ManDayCost.ToString("0"));
+            else if (engine.Progress >= 1f)
+                line3 = Text.Get("{=scm_card_finished}Finished");
+            else
+                line3 = Text.Get("{=scm_card_ready_in}Ready in {TIME}", "TIME", SiegeActions.DaysText(SiegeActions.DaysToBuild(siege, type, engine.Progress)));
 
             return new SiegeEngineCardVM(EngineSprites.For(type.StringId), type.Name.ToString(), line1, line2, line3,
                 type.Description.ToString(), actionText, action);
@@ -63,9 +63,9 @@ namespace SiegeCommandMenu
         /// <summary>Compact one-line stats for the menu text.</summary>
         public static string OneLine(SiegeEvent siege, SiegeEngineType type)
         {
-            string text = "HP " + type.BaseHitPoints.ToString("0");
+            string text = Text.Get("{=scm_line_hp}HP {HP}", "HP", type.BaseHitPoints.ToString("0"));
             if (type.IsRanged)
-                text += ", damage " + type.Damage.ToString("0");
+                text += ", " + Text.Get("{=scm_line_damage}damage {DAMAGE}", "DAMAGE", type.Damage.ToString("0"));
             return text + ", " + SiegeActions.DaysText(SiegeActions.DaysToBuild(siege, type, 0f));
         }
 
@@ -151,7 +151,7 @@ namespace SiegeCommandMenu
                 catch (Exception e)
                 {
                     ModLog.Error("Panel click", e);
-                    InformationManager.DisplayMessage(new InformationMessage("Siege Command Menu: " + e.Message));
+                    InformationManager.DisplayMessage(new InformationMessage(Text.Get("{=scm_error}Siege Command Menu: {ERROR}", "ERROR", e.Message)));
                 }
             }
 
