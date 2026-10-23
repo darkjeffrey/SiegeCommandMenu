@@ -183,6 +183,9 @@ namespace SiegeCommandMenu
                     args => RowSelected(row));
             }
 
+            starter.AddGameMenuOption(PlanningMenuId, "scm_deploy_all", "{=scm_deploy_all}Deploy all from reserve",
+                DeployAllCondition, args => DeployAllSelected());
+
             starter.AddGameMenuOption(PlanningMenuId, "scm_planning_back", "{=scm_back_siege}Back to the siege menu",
                 args =>
                 {

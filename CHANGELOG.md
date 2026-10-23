@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 1.0.2
+- "Deploy all from reserve" option in Siege Planning: moves every reserve engine that fits into a free slot.
+- Melee slots are named after what they take ("Ram slot", "Siege tower slot 1/2") instead of "Tower or ram slot".
 - Fixed a crash on the campaign map after a battering ram finished building or redeploying: rams now go in the first melee slot and siege towers in the other two, the same layout the base game uses (the ram used to go in the middle slot).
 - Engines already sitting in the wrong melee slot are taken out automatically: finished ones go to the reserve, unfinished ones are cancelled.
 - All player-facing text is translatable, with the English string table in `ModuleData/Languages`.

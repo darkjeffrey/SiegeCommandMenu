@@ -14,8 +14,13 @@
     <string id="scm_camp_ready_in" text="Siege camp: ready in {TIME}" />
     <string id="scm_pick" text="Pick a slot or an engine." />
     <string id="scm_slot_ranged" text="Ranged slot {N}" />
-    <string id="scm_slot_melee" text="Tower or ram slot {N}" />
     <string id="scm_slot_reserve" text="Reserve" />
+    <string id="scm_slot_ram_n" text="Ram slot {N}" />
+    <string id="scm_slot_ram" text="Ram slot" />
+    <string id="scm_slot_tower_n" text="Siege tower slot {N}" />
+    <string id="scm_slot_tower" text="Siege tower slot" />
+    <string id="scm_deployed_all" text="Deployed {COUNT} engine(s) from the reserve." />
+    <string id="scm_reserve_left" text="{COUNT} stayed in the reserve (no free slot)." />
     <string id="scm_row_empty" text="{SLOT}: empty" />
     <string id="scm_row_engine" text="{SLOT}: {ENGINE} ({STATUS})" />
     <string id="scm_ready" text="ready" />
@@ -55,6 +60,7 @@
     <!-- src/Menu/SiegeMenuBehavior.cs -->
     <string id="scm_auto_moved" text="{ENGINE} finished and moved to the reserve." />
     <string id="scm_auto_move_failed" text="{ENGINE} finished, but could not be moved to the reserve." />
+    <string id="scm_deploy_all" text="Deploy all from reserve" />
     <string id="scm_back_siege" text="Back to the siege menu" />
     <string id="scm_deploy_free" text="Deploy to a free slot" />
     <string id="scm_move_to_reserve" text="Move to reserve" />

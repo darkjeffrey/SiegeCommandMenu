@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using TaleWorlds.CampaignSystem.Siege;
 using TaleWorlds.Core;
 
@@ -68,6 +69,29 @@ namespace SiegeCommandMenu
         {
             int slot = FreeSlotFor(siege, engine);
             return slot >= 0 && DeployFromReserve(siege, engine, slot);
+        }
+
+        /// <summary>True when at least one reserve engine has a free slot it fits.</summary>
+        public static bool CanDeployAnyFromReserve(SiegeEvent siege)
+        {
+            return Reserve(siege).Any(e => e != null && FreeSlotFor(siege, e) >= 0);
+        }
+
+        /// <summary>
+        /// Moves every reserve engine that fits into a free slot, in reserve order. Returns how many
+        /// were deployed; the rest stay in the reserve.
+        /// </summary>
+        public static int DeployAllFromReserve(SiegeEvent siege)
+        {
+            int deployed = 0;
+            foreach (var engine in Reserve(siege))
+            {
+                if (engine != null && DeployFromReserve(siege, engine))
+                    deployed++;
+            }
+
+            ModLog.Debug(() => "DeployAllFromReserve: " + deployed + " deployed | " + Describe(siege));
+            return deployed;
         }
 
         /// <summary>Index of the first free slot this reserve engine fits, or -1 if there is none.</summary>

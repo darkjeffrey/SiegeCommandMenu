@@ -4,7 +4,7 @@ A Mount & Blade II: Bannerlord (v1.4.8) mod that adds a **Siege Planning** scree
 
 ## Features
 
-- **Siege Planning** option in the besieger's siege menu: one entry per ranged slot, "Tower or ram slot" and reserve engine. Melee slots follow the base game: the first takes the battering ram, the other two take siege towers.
+- **Siege Planning** option in the besieger's siege menu: one entry per ranged slot, melee slot and reserve engine, plus **Deploy all from reserve**. Melee slots follow the base game and are named after what they take: the ram slot first, then the siege tower slots.
 - Build only what your siege tier allows, with build times in in-game hours or days (including the siege camp).
 - Engine panel beside the menu with pictures, damage, hit chance, build time and current health (e.g. `80% HP`). Cards are clickable and the panel pages four cards at a time with Scroll up / Scroll down buttons.
 - Unfinished engines can be cancelled but not sent to the reserve; mark them to **move to reserve when finished**.

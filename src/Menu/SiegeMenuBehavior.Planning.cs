@@ -42,10 +42,50 @@ namespace SiegeCommandMenu
                 case SlotKind.Ranged:
                     return Text.Get("{=scm_slot_ranged}Ranged slot {N}", "N", index + 1);
                 case SlotKind.Melee:
-                    return Text.Get("{=scm_slot_melee}Tower or ram slot {N}", "N", index + 1);
+                    return MeleeSlotName(index);
                 default:
                     return Text.Get("{=scm_slot_reserve}Reserve");
             }
+        }
+
+        /// <summary>"Ram slot" or "Siege tower slot 2": named after what the slot takes, numbered only when there are several.</summary>
+        private static string MeleeSlotName(int index)
+        {
+            var siege = Siege;
+            int slots = siege == null ? 0 : SiegeActions.DeployedSlots(siege, false).Count;
+            int rams = siege == null ? 0 : SiegeActions.RamSlotCount(siege);
+
+            if (index < rams)
+            {
+                return rams > 1
+                    ? Text.Get("{=scm_slot_ram_n}Ram slot {N}", "N", index + 1)
+                    : Text.Get("{=scm_slot_ram}Ram slot");
+            }
+
+            return slots - rams > 1
+                ? Text.Get("{=scm_slot_tower_n}Siege tower slot {N}", "N", index - rams + 1)
+                : Text.Get("{=scm_slot_tower}Siege tower slot");
+        }
+
+        private static bool DeployAllCondition(MenuCallbackArgs args)
+        {
+            args.optionLeaveType = GameMenuOption.LeaveType.Continue;
+            return Siege != null && SiegeActions.CanDeployAnyFromReserve(Siege);
+        }
+
+        private static void DeployAllSelected()
+        {
+            var siege = Siege;
+            if (siege != null)
+            {
+                int deployed = SiegeActions.DeployAllFromReserve(siege);
+                int left = SiegeActions.Reserve(siege).Count;
+                _note = Text.Get("{=scm_deployed_all}Deployed {COUNT} engine(s) from the reserve.", "COUNT", deployed);
+                if (left > 0)
+                    _note += " " + Text.Get("{=scm_reserve_left}{COUNT} stayed in the reserve (no free slot).", "COUNT", left);
+            }
+
+            GameMenu.SwitchToMenu(PlanningMenuId);
         }
 
         private static List<PlanRow> Rows(SiegeEvent siege)
