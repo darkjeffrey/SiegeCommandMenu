@@ -26,19 +26,19 @@ namespace SiegeCommandMenu
         {
             try
             {
-                var sb = new System.Text.StringBuilder();
+                var lines = new System.Text.StringBuilder();
                 foreach (bool ranged in new[] { true, false })
                 {
                     var slots = DeployedSlots(siege, ranged);
                     for (int i = 0; i < slots.Count; i++)
-                        sb.AppendLine("    " + (ranged ? "ranged " : "melee  ") + i + ": " + DescribeEngine(slots[i]));
+                        lines.AppendLine("    " + (ranged ? "ranged " : "melee  ") + i + ": " + DescribeEngine(slots[i]));
                 }
 
                 var reserve = Reserve(siege);
-                sb.AppendLine("    reserve count: " + reserve.Count);
+                lines.AppendLine("    reserve count: " + reserve.Count);
                 for (int i = 0; i < reserve.Count; i++)
-                    sb.AppendLine("    reserve " + i + ": " + DescribeEngine(reserve[i]));
-                return sb.ToString().TrimEnd();
+                    lines.AppendLine("    reserve " + i + ": " + DescribeEngine(reserve[i]));
+                return lines.ToString().TrimEnd();
             }
             catch (Exception e)
             {

@@ -74,7 +74,7 @@ namespace SiegeCommandMenu
         /// <summary>True when at least one reserve engine has a free slot it fits.</summary>
         public static bool CanDeployAnyFromReserve(SiegeEvent siege)
         {
-            return Reserve(siege).Any(e => e != null && FreeSlotFor(siege, e) >= 0);
+            return Reserve(siege).Any(engine => engine != null && FreeSlotFor(siege, engine) >= 0);
         }
 
         /// <summary>

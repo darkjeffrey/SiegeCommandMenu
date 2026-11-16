@@ -52,7 +52,7 @@ namespace SiegeCommandMenu
                 .Concat(model.GetAvailableAttackerTowerSiegeEngines(party))
                 .ToList();
 
-            return siege == null ? all : all.Where(t => CanPlaceMelee(siege, slotIndex, t)).ToList();
+            return siege == null ? all : all.Where(type => CanPlaceMelee(siege, slotIndex, type)).ToList();
         }
 
         /// <summary>With the option on, drops each plain engine whose fire version ("fire_" + id) is also buildable.</summary>
@@ -61,9 +61,9 @@ namespace SiegeCommandMenu
             if (!Options.HideNonFire)
                 return types;
 
-            var ids = new HashSet<string>(types.Select(t => t.StringId));
-            return types.Where(t => t.StringId.StartsWith("fire_", StringComparison.Ordinal)
-                || !ids.Contains("fire_" + t.StringId)).ToList();
+            var ids = new HashSet<string>(types.Select(type => type.StringId));
+            return types.Where(type => type.StringId.StartsWith("fire_", StringComparison.Ordinal)
+                || !ids.Contains("fire_" + type.StringId)).ToList();
         }
 
         // ---- Build times
@@ -153,23 +153,23 @@ namespace SiegeCommandMenu
         {
             try
             {
-                var sb = new System.Text.StringBuilder();
+                var line = new System.Text.StringBuilder();
                 foreach (bool ranged in new[] { true, false })
                 {
                     var slots = DeployedSlots(siege, ranged);
                     for (int i = 0; i < slots.Count; i++)
                     {
-                        var e = slots[i];
-                        sb.Append(ranged ? "R" : "M").Append(i).Append('=')
-                          .Append(e == null ? "-" : e.SiegeEngine.StringId + "@" + e.Progress.ToString("0.00"))
-                          .Append(' ');
+                        var engine = slots[i];
+                        line.Append(ranged ? "R" : "M").Append(i).Append('=')
+                            .Append(engine == null ? "-" : engine.SiegeEngine.StringId + "@" + engine.Progress.ToString("0.00"))
+                            .Append(' ');
                     }
                 }
 
-                sb.Append("reserve=");
-                foreach (var e in Reserve(siege))
-                    sb.Append(e == null ? "null" : e.SiegeEngine.StringId + "@" + e.Progress.ToString("0.00")).Append(',');
-                return sb.ToString();
+                line.Append("reserve=");
+                foreach (var engine in Reserve(siege))
+                    line.Append(engine == null ? "null" : engine.SiegeEngine.StringId + "@" + engine.Progress.ToString("0.00")).Append(',');
+                return line.ToString();
             }
             catch (Exception ex)
             {

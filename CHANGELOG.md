@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+- Updated for Bannerlord v1.5.7.
+- The launcher no longer warns that the dependencies (Native, SandBoxCore, Sandbox, MCM) don't match: each one now states the version it needs.
+
 ## 1.0.2
 - "Deploy all from reserve" option in Siege Planning: moves every reserve engine that fits into a free slot.
 - Melee slots are named after what they take ("Ram slot", "Siege tower slot 1/2") instead of "Tower or ram slot".

@@ -1,6 +1,6 @@
 # Siege Command Menu
 
-A Mount & Blade II: Bannerlord (v1.4.8) mod that adds a **Siege Planning** screen to the besieger's left game menu. Queue, build, deploy and reserve siege engines without leaving the menu, with a clickable panel showing each engine's picture and stats.
+A Mount & Blade II: Bannerlord (v1.5.7) mod that adds a **Siege Planning** screen to the besieger's left game menu. Queue, build, deploy and reserve siege engines without leaving the menu, with a clickable panel showing each engine's picture and stats.
 
 ## Features
 
@@ -13,7 +13,7 @@ A Mount & Blade II: Bannerlord (v1.4.8) mod that adds a **Siege Planning** scree
 
 ## Requirements
 
-- Bannerlord 1.4.8 (singleplayer campaign)
+- Bannerlord 1.5.7 (singleplayer campaign)
 - [Mod Configuration Menu v5](https://www.nexusmods.com/mountandblade2bannerlord/mods/612) (optional; without it the defaults are used and there is no options screen)
 
 ## Install
@@ -29,6 +29,14 @@ dotnet build -c Release -p:GameDir="C:\Program Files (x86)\Steam\steamapps\commo
 ```
 
 The build also copies the module (`_Module` plus the DLL) into `Modules\SiegeCommandMenu` in the game folder. If MCM is installed somewhere else, pass `-p:McmDll=<path to MCMv5.dll>`.
+
+## Releasing
+
+1. Add a `## <version>` section to `CHANGELOG.md`, run `bltools.py bump SiegeCommandMenu <version>`, rebuild and push.
+2. Run `bltools.py package SiegeCommandMenu` to make `release/SiegeCommandMenu-v<version>.zip`.
+3. Publish a GitHub Release tagged `v<version>` with that zip attached. The "Publish to Nexus Mods" workflow then uploads it to Nexus as the new version of the main file, with the changelog section as its changelog. It stops if the tag, `_Module/SubModule.xml` and the zip don't have the same version.
+
+The workflow needs the repository secret `NEXUS_API_KEY` (your personal key from Nexus Mods' API keys page).
 
 ## Layout
 

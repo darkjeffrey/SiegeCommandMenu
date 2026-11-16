@@ -65,8 +65,8 @@ namespace SiegeCommandMenu
 
             bool ranged = _selectedKind == SlotKind.Ranged;
             return SiegeActions.Reserve(Siege)
-                .Where(e => e != null && e.SiegeEngine.IsRanged == ranged
-                    && (ranged || SiegeActions.CanPlaceMelee(Siege, _selectedIndex, e.SiegeEngine)))
+                .Where(engine => engine != null && engine.SiegeEngine.IsRanged == ranged
+                    && (ranged || SiegeActions.CanPlaceMelee(Siege, _selectedIndex, engine.SiegeEngine)))
                 .ToList();
         }
 
@@ -112,7 +112,7 @@ namespace SiegeCommandMenu
 
             var buildable = SiegeActions.BuildableTypes(_selectedKind == SlotKind.Ranged, siege, _selectedIndex);
             ModLog.Debug(() => "Build list (hide non-fire " + (Options.HideNonFire ? "on" : "off") + "): "
-                + string.Join(", ", buildable.Select(t => t.StringId)));
+                + string.Join(", ", buildable.Select(type => type.StringId)));
 
             string buildHint = _buildToReserve
                 ? Text.Get("{=scm_click_build_reserve}Click to build (then reserve)")
