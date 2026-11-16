@@ -28,6 +28,12 @@ namespace SiegeCommandMenu
         [DataSourceProperty]
         public string Title { get; }
 
+        [DataSourceProperty]
+        public string ScrollUpText => Text.Get("{=scm_scroll_up}^  Scroll up");
+
+        [DataSourceProperty]
+        public string ScrollDownText => Text.Get("{=scm_scroll_down}v  Scroll down");
+
         /// <summary>The cards on the current page.</summary>
         [DataSourceProperty]
         public MBBindingList<SiegeEngineCardVM> Cards { get; }

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.4
+- The "Scroll up" and "Scroll down" labels in the engine panel now come from the mod's code like the rest of its text, so they're always translated and never show a raw text id.
+
 ## 1.0.3
 - Updated for Bannerlord v1.5.7.
 - The launcher no longer warns that the dependencies (Native, SandBoxCore, Sandbox, MCM) don't match: each one now states the version it needs.

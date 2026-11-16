@@ -16,7 +16,7 @@
                 <!-- Scroll up: shown when earlier engines are hidden -->
                 <ButtonWidget DoNotPassEventsToChildren="true" IsVisible="@CanScrollUp" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="36" MarginTop="6" Brush="GameMenu.Button" Command.Click="ExecuteScrollUp">
                   <Children>
-                    <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="GameMenu.Items.Text.Default" Brush.FontSize="20" Text="{=scm_scroll_up}^  Scroll up" />
+                    <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="GameMenu.Items.Text.Default" Brush.FontSize="20" Text="@ScrollUpText" />
                   </Children>
                 </ButtonWidget>
 
@@ -57,7 +57,7 @@
                 <!-- Scroll down: shown when more engines are hidden below -->
                 <ButtonWidget DoNotPassEventsToChildren="true" IsVisible="@CanScrollDown" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="36" MarginTop="6" Brush="GameMenu.Button" Command.Click="ExecuteScrollDown">
                   <Children>
-                    <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="GameMenu.Items.Text.Default" Brush.FontSize="20" Text="{=scm_scroll_down}v  Scroll down" />
+                    <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="GameMenu.Items.Text.Default" Brush.FontSize="20" Text="@ScrollDownText" />
                   </Children>
                 </ButtonWidget>
 

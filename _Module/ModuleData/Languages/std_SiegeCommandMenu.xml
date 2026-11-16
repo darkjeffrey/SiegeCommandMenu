@@ -81,6 +81,8 @@
     <string id="scm_error" text="Siege Command Menu: {ERROR}" />
 
     <!-- src/Panel/SiegeInfoVM.cs -->
+    <string id="scm_scroll_up" text="^  Scroll up" />
+    <string id="scm_scroll_down" text="v  Scroll down" />
     <string id="scm_page" text="{FIRST}-{LAST} of {TOTAL}" />
 
     <!-- src/Settings/ModSettings.cs -->
@@ -117,9 +119,5 @@
     <string id="scm_one_day" text="~1 day" />
     <string id="scm_days" text="~{DAYS} days" />
     <string id="scm_hp_percent" text="{PERCENT}% HP" />
-
-    <!-- _Module/GUI/Prefabs/SiegeInfoPanel.xml -->
-    <string id="scm_scroll_up" text="^  Scroll up" />
-    <string id="scm_scroll_down" text="v  Scroll down" />
   </strings>
 </base>
